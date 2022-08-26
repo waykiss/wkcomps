@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'go'
+      - '.github/workspace/test_go.yaml'
       - '!**.md' # exclude .md files
 
 jobs:
