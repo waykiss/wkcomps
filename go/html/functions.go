@@ -2,7 +2,7 @@ package html
 
 import (
 	"bytes"
-	"github.com/rodrigorodriguescosta/goapp/comps/str"
+	"github.com/waykiss/wkcomps/str"
 	"github.com/tdewolff/minify/v2"
 	"github.com/tdewolff/minify/v2/html"
 	"github.com/tdewolff/minify/v2/svg"

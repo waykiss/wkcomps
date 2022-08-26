@@ -7,7 +7,6 @@ require (
 	github.com/badoux/checkmail v1.2.1
 	github.com/golang/protobuf v1.5.2
 	github.com/iancoleman/strcase v0.2.0
-	github.com/rodrigorodriguescosta/goapp v0.0.0-20220825205424-9e30444a7dd1
 	github.com/rodrigorodriguescosta/govalidator v0.0.0-20190424111038-f61b66f89f4a
 	github.com/segmentio/ksuid v1.0.4
 	github.com/sirupsen/logrus v1.9.0
