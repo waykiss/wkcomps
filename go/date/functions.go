@@ -2,17 +2,19 @@ package date
 
 import (
 	"fmt"
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/timestamp"
-	"golang.org/x/text/language"
 	"math"
 	"strconv"
 	"time"
+
+	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/timestamp"
+	"golang.org/x/text/language"
 )
 
 type TimeZones string
 
 const (
+	TimeZoneSaoPaulo       = "America/Sao_Paulo"
 	DateTimeFormatDatabase = "2006-01-02T15:04:05"
 	DateFormatDatabase     = "2006-01-02"
 	DateTimeBr             = "02/01/2006 15:04:05"
@@ -56,7 +58,7 @@ func ToTime(v interface{}) time.Time {
 	return result
 }
 
-//IntToTime Convert time in int64 format to time.Time type
+// IntToTime Convert time in int64 format to time.Time type
 func IntToTime(v int64) time.Time {
 	return time.Unix(int64(v)/1000, int64(v)%1000*1000000)
 }
@@ -78,17 +80,17 @@ func GetDateFromTime(v time.Time, timezone TimeZones) time.Time {
 	return time.Date(v.Year(), v.Month(), v.Day(), v.Hour(), 0, 0, 0, l)
 }
 
-//GetEndOfTheDay essa funcao altera um horario para o final do dia, 23:59:59
+// GetEndOfTheDay essa funcao altera um horario para o final do dia, 23:59:59
 func GetEndOfTheDay(v time.Time) time.Time {
 	return time.Date(v.Year(), v.Month(), v.Day(), 23, 59, 59, 0, time.Local)
 }
 
-//GetStartOfTheDay essa funcao altera um horario para o inicio do dia, 00:00:00
+// GetStartOfTheDay essa funcao altera um horario para o inicio do dia, 00:00:00
 func GetStartOfTheDay(v time.Time) time.Time {
 	return time.Date(v.Year(), v.Month(), v.Day(), 00, 00, 00, 0, time.Local)
 }
 
-//NextDateByDay retorna a proxima data baseado no dia
+// NextDateByDay retorna a proxima data baseado no dia
 func NextDateByDay(day, maxDay int) time.Time {
 	now := time.Now()
 	currentDay := now.Day()
@@ -104,7 +106,7 @@ func NextDateByDay(day, maxDay int) time.Time {
 	return time.Date(currentYear, currentMonth, day, 23, 59, 59, 0, time.Local)
 }
 
-//GetTempo retorna uma string informado o tempo em portugues que falta a partir de um objeto Duration
+// GetTempo retorna uma string informado o tempo em portugues que falta a partir de um objeto Duration
 func GetTempo(duration time.Duration) (r string) {
 	diasString := ""
 	duration = duration.Round(time.Minute)
@@ -122,7 +124,7 @@ func GetTempo(duration time.Duration) (r string) {
 	return fmt.Sprintf("%s%02dh%02dm", diasString, int(math.Abs(float64(h))), int(math.Abs(float64(m))))
 }
 
-//IsWeekend retorna se uma data e final de semana ou nao
+// IsWeekend retorna se uma data e final de semana ou nao
 func IsWeekend(t time.Time) bool {
 	t = t.UTC()
 	switch t.Weekday() {
@@ -132,7 +134,7 @@ func IsWeekend(t time.Time) bool {
 	return false
 }
 
-//IsWeekend retorna o próximo dia da semana
+// IsWeekend retorna o próximo dia da semana
 func GetNextDayOfWeek(t time.Time) time.Time {
 	for IsWeekend(t) {
 		t = t.AddDate(0, 0, 1)
@@ -140,20 +142,20 @@ func GetNextDayOfWeek(t time.Time) time.Time {
 	return t
 }
 
-//DateEqual compare two dates if they are equals, ignoring the time and considering only the date
-//return true if they are equals
+// DateEqual compare two dates if they are equals, ignoring the time and considering only the date
+// return true if they are equals
 func DateEqual(date1, date2 time.Time) bool {
 	y1, m1, d1 := date1.Date()
 	y2, m2, d2 := date2.Date()
 	return y1 == y2 && m1 == m2 && d1 == d2
 }
 
-//FirstDayOfMonth return the time and set day 1
+// FirstDayOfMonth return the time and set day 1
 func FirstDayOfMonth(t time.Time) time.Time {
 	return time.Date(t.Year(), t.Month(), 1, 0, 0, 0, 0, t.Location())
 }
 
-//LastDayOfMonth return the time with last day of the month
+// LastDayOfMonth return the time with last day of the month
 func LastDayOfMonth(t time.Time) time.Time {
 	return FirstDayOfMonth(t).AddDate(0, 1, 0).Add(-time.Second)
 }
@@ -162,7 +164,7 @@ func NextDay(t time.Time) time.Time {
 	return t.AddDate(0, 0, 1)
 }
 
-//GetMonthName retorna o nome do mês baseado na lingua passada como parametro, padrao é ingles
+// GetMonthName retorna o nome do mês baseado na lingua passada como parametro, padrao é ingles
 func GetMonthName(date time.Time, lang language.Tag) string {
 	switch lang {
 	case language.BrazilianPortuguese:
@@ -223,7 +225,7 @@ var longMonthNamesPtBR = map[string]string{
 	"December":  "dezembro",
 }
 
-//FromString function to return a time.Time given a string, it automatically tries to convert from several and
+// FromString function to return a time.Time given a string, it automatically tries to convert from several and
 // common formats, if it has error, return time zeroValue
 func FromString(date string) (r time.Time) {
 	formats := []string{
@@ -244,7 +246,7 @@ func FromString(date string) (r time.Time) {
 	return
 }
 
-//GetDaysBetweenDates return the diference of the of days between two dates object
+// GetDaysBetweenDates return the diference of the of days between two dates object
 func GetDaysBetweenDates(startDate, endDate time.Time) int {
 	endDate = time.Date(endDate.Year(), endDate.Month(), endDate.Day(), 0, 0, 0, 0, time.Local)
 	startDate = time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 0, 0, 0, 0, time.Local)
