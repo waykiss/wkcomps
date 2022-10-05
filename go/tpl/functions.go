@@ -4,17 +4,18 @@ import (
 	"bytes"
 	"embed"
 	"fmt"
+	"path/filepath"
+	"reflect"
+	"strings"
+	"text/template"
+	"time"
+
 	"github.com/waykiss/wkcomps/file"
 	"github.com/waykiss/wkcomps/html"
 	"github.com/waykiss/wkcomps/number"
 	"github.com/waykiss/wkcomps/str"
 	"github.com/waykiss/wkcomps/validation"
 	"github.com/waykiss/wkcomps/xml"
-	"path/filepath"
-	"reflect"
-	"strings"
-	"text/template"
-	"time"
 )
 
 var renderTemplateFuncMap = template.FuncMap{
@@ -29,6 +30,9 @@ var renderTemplateFuncMap = template.FuncMap{
 	},
 	"sum": func(value1, value2 float64) float64 {
 		return value1 + value2
+	},
+	"sub": func(value1, value2 float64) float64 {
+		return value1 - value2
 	},
 	"multi": func(value1, value2 float64) float64 {
 		return value1 * value2
