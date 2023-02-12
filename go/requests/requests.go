@@ -3,8 +3,6 @@ package requests
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
-	"fmt"
 	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
@@ -15,41 +13,41 @@ import (
 )
 
 type Response struct {
-	StatusCode int
-	Result     []byte
+	StatusCode   int
+	HttpResponse *http.Response
+	ResponseBody []byte
 }
 
-type Model struct {
+type Request struct {
 	BasicAuthentication struct {
 		UserName, Password string
 	}
-	Timeout  time.Duration
-	Response Response
+	Timeout time.Duration
 }
 
-func NewRequest() Model {
-	return Model{}
+func NewRequest() Request {
+	return Request{}
 }
 
 // Get realiza uma request GET e joga o resultado da request para a variavel dest
-func (r *Model) Get(url string, headers map[string]string, dest interface{}) (resp *http.Response, err error) {
+func (r *Request) Get(url string, headers map[string]string, dest interface{}) (resp *Response, err error) {
 	return r.Request(http.MethodGet, url, headers, nil, dest)
 }
 
 // Post realiza uma request POST e joga o resultado da request para a variavel dest
-func (r *Model) Post(url string, headers map[string]string, params,
-	dest interface{}) (resp *http.Response, err error) {
+func (r *Request) Post(url string, headers map[string]string, params,
+	dest interface{}) (resp *Response, err error) {
 	return r.Request(http.MethodPost, url, headers, params, dest)
 }
 
-func (r *Model) Delete(url string, headers map[string]string, params,
-	dest interface{}) (resp *http.Response, err error) {
+func (r *Request) Delete(url string, headers map[string]string, params,
+	dest interface{}) (resp *Response, err error) {
 	return r.Request(http.MethodDelete, url, headers, params, dest)
 }
 
 // Put realiza uma request PUT e joga o resultado da request para a variavel dest
-func (r *Model) Put(url string, headers map[string]string, params,
-	dest interface{}) (resp *http.Response, err error) {
+func (r *Request) Put(url string, headers map[string]string, params,
+	dest interface{}) (resp *Response, err error) {
 	return r.Request(http.MethodPut, url, headers, params, dest)
 }
 
@@ -64,8 +62,8 @@ func readBody(body io.ReadCloser) (resp []byte, err error) {
 }
 
 // Request realiza uma request e joga o resultado da request para o parametro `dest`
-func (r *Model) Request(method, urlAddress string, headers map[string]string, params,
-	dest interface{}) (resp *http.Response, err error) {
+func (r *Request) Request(method, urlAddress string, headers map[string]string, params,
+	dest interface{}) (resp *Response, err error) {
 	logrus.WithFields(map[string]interface{}{
 		"Method": method,
 		"Url":    urlAddress,
@@ -102,13 +100,13 @@ func (r *Model) Request(method, urlAddress string, headers map[string]string, pa
 	}
 
 	for key, value := range headers {
-		req.Header.Set(key, value)
+		req.Header.Add(key, value)
 	}
-
+	resp = &Response{}
 	// realiza a request
 	client := &http.Client{}
 	client.Timeout = r.Timeout
-	resp, err = client.Do(req)
+	resp.HttpResponse, err = client.Do(req)
 
 	if err != nil {
 		logrus.WithFields(map[string]interface{}{
@@ -117,28 +115,16 @@ func (r *Model) Request(method, urlAddress string, headers map[string]string, pa
 		return
 	}
 
-	if resp.StatusCode >= 400 {
-		body, err2 := readBody(resp.Body)
-		if err2 != nil {
-			return
-		}
-		defer resp.Body.Close()
-		r.Response.StatusCode = resp.StatusCode
-		r.Response.Result = body
-		err = errors.New(fmt.Sprintf("Status Code %d  message: %s", resp.StatusCode, string(body)))
+	// faz o parse da request
+	body, err2 := readBody(resp.HttpResponse.Body)
+	if err2 != nil {
 		return
 	}
+	defer resp.HttpResponse.Body.Close()
+	resp.ResponseBody = body
 
 	// grava a resposta na variavel dest
-	if dest != nil {
-		body, err2 := readBody(resp.Body)
-		defer resp.Body.Close()
-		if err2 != nil {
-			err = err2
-			return
-		}
-		r.Response.StatusCode = resp.StatusCode
-		r.Response.Result = body
+	if dest != nil && resp.HttpResponse.StatusCode == http.StatusOK || resp.HttpResponse.StatusCode == http.StatusCreated {
 		err = json.Unmarshal(body, dest)
 		if err != nil {
 			logrus.WithFields(map[string]interface{}{
