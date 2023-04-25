@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/Nhanderu/brdoc v1.1.2
+	github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883
 	github.com/badoux/checkmail v1.2.1
 	github.com/gabriel-vasile/mimetype v1.4.1
 	github.com/go-redis/redis/v8 v8.11.5
@@ -25,7 +26,6 @@ require (
 )
 
 require (
-	github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
