@@ -2,11 +2,6 @@ package str
 
 import (
 	"fmt"
-	"github.com/iancoleman/strcase"
-	"github.com/rodrigorodriguescosta/govalidator"
-	"github.com/segmentio/ksuid"
-	"golang.org/x/text/transform"
-	"golang.org/x/text/unicode/norm"
 	"math"
 	"math/rand"
 	"net/url"
@@ -16,6 +11,13 @@ import (
 	"strings"
 	"time"
 	"unicode"
+
+	"github.com/andreyvit/diff"
+	"github.com/iancoleman/strcase"
+	"github.com/rodrigorodriguescosta/govalidator"
+	"github.com/segmentio/ksuid"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 )
 
 // StringInSlice check if certain string contain in slice
@@ -52,10 +54,10 @@ const (
 	RegexOnlyNumbers = "[^0-9]"
 )
 
-//RandString generate a random string
-//Use the constants RandStringCharsOnlyNumbers, RandStringCharsOnlyLetters and RandStringCharsLettersAndNumbers
-//to facilitate to pass the type of character you'd like to generate
-//limit the number of characters at 250
+// RandString generate a random string
+// Use the constants RandStringCharsOnlyNumbers, RandStringCharsOnlyLetters and RandStringCharsLettersAndNumbers
+// to facilitate to pass the type of character you'd like to generate
+// limit the number of characters at 250
 func RandString(n int, chars string) (r string) {
 	if n <= 0 {
 		return
@@ -94,7 +96,7 @@ func NoSpaceNoAccent(v string) string {
 	return v
 }
 
-//TrimAll remove todos os espacos em uma string
+// TrimAll remove todos os espacos em uma string
 func TrimAll(v string) string {
 	return strings.ReplaceAll(v, " ", "")
 }
@@ -116,7 +118,9 @@ func LowerNoSpaceNoAccent(v string) string {
 	return v
 }
 
-/* ReplaceSpecialCharacters substitui todos os caracteres especiais do primeiro parametro pelo valor informado no
+/*
+	ReplaceSpecialCharacters substitui todos os caracteres especiais do primeiro parametro pelo valor informado no
+
 segundo parametro.
 Se o segundo parametro nao for informado, os caracteres serão apenas removidos.
 A partir do terceiro parametro sao consideradas excessoes a regra caso necessario.
@@ -200,27 +204,27 @@ func StringPToUint(v *string) uint {
 	return uint(u64)
 }
 
-//GetFilenameFromPath return filename given the path(url or local path)
+// GetFilenameFromPath return filename given the path(url or local path)
 func GetFilenameFromPath(p string) string {
 	return path.Base(p)
 }
 
-//GetFilenameWithoutExtension returns the filename without extension of given path
+// GetFilenameWithoutExtension returns the filename without extension of given path
 func GetFilenameWithoutExtension(v string) string {
 	return strings.TrimSuffix(v, path.Ext(v))
 }
 
-//GetPathFromFilename get only the path of the whole path passed by parameter, it returns path without filename
+// GetPathFromFilename get only the path of the whole path passed by parameter, it returns path without filename
 func GetPathFromFullFilename(v string) string {
 	return strings.TrimSuffix(v, path.Ext(v))
 }
 
-//IsUrl check if the string is a valid url
+// IsUrl check if the string is a valid url
 func IsUrl(url string) bool {
 	return govalidator.IsURL(url)
 }
 
-//IsInt check if a string is a valid number
+// IsInt check if a string is a valid number
 func IsInt(url string) bool {
 	return govalidator.IsInt(url)
 }
@@ -232,7 +236,7 @@ func IsOnlyNumbers(v string) bool {
 	return false
 }
 
-//ContainNumbers verifica se a string passada contem numeros entre os caracteres
+// ContainNumbers verifica se a string passada contem numeros entre os caracteres
 func ContainNumbers(v string) bool {
 	result := RemoveAccent(v)
 	re := regexp.MustCompile(RegexOnlyNumbers)
@@ -240,7 +244,7 @@ func ContainNumbers(v string) bool {
 	return result != ""
 }
 
-//ContainLetters verifica se a string passada contem letras entre os caracteres
+// ContainLetters verifica se a string passada contem letras entre os caracteres
 func ContainLetters(v string) bool {
 	result := RemoveAccent(v)
 	re := regexp.MustCompile(RegexOnlyLetters)
@@ -248,7 +252,7 @@ func ContainLetters(v string) bool {
 	return result != ""
 }
 
-//ContainNumbersAndLetters verifica se a string passada contem letras e numeros ao mesmo tempo
+// ContainNumbersAndLetters verifica se a string passada contem letras e numeros ao mesmo tempo
 func ContainNumbersAndLetters(v string) (r bool) {
 	r = ContainNumbers(v)
 	if !r {
@@ -302,7 +306,7 @@ func Uuid() string {
 	return ksuid.New().String()
 }
 
-//GetLastCharacter retorna os ultimos x/count caracteres de uma string
+// GetLastCharacter retorna os ultimos x/count caracteres de uma string
 func GetLastCharacter(v string, count int) (r string) {
 	if v != "" && count < len(v) {
 		r = v[len(v)-count:]
@@ -319,15 +323,15 @@ func ExtractValue(body string, key string) string {
 	return strings.ReplaceAll(keyValMatch[1], "\"", "")
 }
 
-//ReplaceAtIndex altera um caractere em uma string baseado no index da mesma
+// ReplaceAtIndex altera um caractere em uma string baseado no index da mesma
 func ReplaceAtIndex(in string, char rune, idx int) string {
 	out := []rune(in)
 	out[idx] = char
 	return string(out)
 }
 
-//Format essa funcao tem como objetivo mascarar strings em um determinado formato, o caractere # será substituído pelo
-//valor subsequente da string, o caractere * a funcao entende como uma mascara em si, ou seja, ela conta os caracteres
+// Format essa funcao tem como objetivo mascarar strings em um determinado formato, o caractere # será substituído pelo
+// valor subsequente da string, o caractere * a funcao entende como uma mascara em si, ou seja, ela conta os caracteres
 func Format(v, format string) (result string) {
 	// nao processe caso a quantidade de caracteres for diferente dos valores que devem ser preenchidos na mascara
 	if (strings.Count(format, "#") + strings.Count(format, "*")) != len(v) {
@@ -363,7 +367,7 @@ func Format(v, format string) (result string) {
 //	return string(itemArrayString)
 //}
 
-//GetNotZeroValue dado um array de valores string, é retornado o que tem valor nao zerovalue
+// GetNotZeroValue dado um array de valores string, é retornado o que tem valor nao zerovalue
 func GetNotZeroValue(p ...string) string {
 	for _, v := range p {
 		if v != "" {
@@ -410,13 +414,13 @@ func StrPad(input string, padLength int, padString string, padType string) strin
 	return output
 }
 
-//StrPadRight adicionar `padLength` quantidade de caracteres a direita de uma string
+// StrPadRight adicionar `padLength` quantidade de caracteres a direita de uma string
 func StrPadRight(input string, padLength int, padString string) string {
 	return StrPad(input, padLength, padString, "RIGHT")
 }
 
 // CutString remove parte do texto de acordo com o inicio e fim da sequencia
-//informados, retornando o texto atualizado
+// informados, retornando o texto atualizado
 func CutString(str, initial, final string, n int) (strOut string) {
 	strCut := GetStringBetween(str, initial, final, true)
 	//efetua substituição da string capturada por uma string vazia
@@ -427,7 +431,8 @@ func CutString(str, initial, final string, n int) (strOut string) {
 	return
 }
 
-/*GetStringBetween retorna a string que está entre a string inicial e final passada como parametro, caso nao encontre,
+/*
+GetStringBetween retorna a string que está entre a string inicial e final passada como parametro, caso nao encontre,
 retorne uma string vazia
 */
 func GetStringBetween(str, initial, final string, includeInitialAndFinal bool) (strOut string) {
@@ -448,19 +453,52 @@ func GetStringBetween(str, initial, final string, includeInitialAndFinal bool) (
 	return
 }
 
-//GetUriFromUrl retorna uma URI dado uma URL
+// GetDiff returns the differences between the two given strings
+func GetDiff(str1, str2 string) (strOut string) {
+	result := diff.CharacterDiff(str1, str2)
+	return GetStringBetweenAll(result, "(", ")", true)
+}
+
+// GetStringBetweenAll Returns all strings between the start and end strings
+func GetStringBetweenAll(str, initial, final string, includeInitialAndFinal bool) (strOut string) {
+	//quantas vezes a sequencia inicial se repete para ser buscada no loop
+	initialX := strings.Count(str, initial)
+	for i := 0; i < initialX; i++ {
+		iniIndex := strings.Index(str, initial)
+		// //se nao encontrar o index da string a ser removida retornar a propria string base
+		// if iniIndex < 0 {
+		// 	return
+		// }
+		finIndex := iniIndex + strings.Index(str[iniIndex:], final)
+		if finIndex <= iniIndex {
+			return
+		}
+		//captura a sequencia a ser removida
+		res := str[iniIndex : finIndex+len(final)]
+		if includeInitialAndFinal == false {
+			res = str[iniIndex+(len(initial)) : finIndex]
+		}
+		strOut = fmt.Sprintf("%s %s", strOut, res)
+		//elimina a sequencia ja analizada
+		str = str[finIndex+len(final):]
+	}
+
+	return
+}
+
+// GetUriFromUrl retorna uma URI dado uma URL
 func GetUriFromUrl(urlString string) string {
 	u, _ := url.Parse(urlString)
 	return u.RequestURI()
 }
 
-//WordCount return the number of the words that contains in string
+// WordCount return the number of the words that contains in string
 func WordCount(v string) int {
 	words := strings.Fields(v)
 	return len(words)
 }
 
-//Contains verifica se alguma das strings passada contem no primeiro parametro
+// Contains verifica se alguma das strings passada contem no primeiro parametro
 func Contains(v string, strs ...string) bool {
 	for _, str := range strs {
 		if strings.Contains(v, str) {

@@ -154,7 +154,7 @@ func TestRandStringRepeatedNumbers(t *testing.T) {
 	}
 }
 
-//TestRandStringRepeatedString test if the characters are repeteated sequencially
+// TestRandStringRepeatedString test if the characters are repeteated sequencially
 func TestRandStringRepeatedString(t *testing.T) {
 	var results []string
 	for i := 0; i < 100; i++ {
@@ -257,5 +257,81 @@ func TestOnlyNumbers(t *testing.T) {
 	for _, v := range testCases {
 		got := OnlyNumbers(v.value)
 		assert.Equal(t, v.expected, got, "", v.value, v.expected, got)
+	}
+}
+
+func TestGetDiff(t *testing.T) {
+	testCases := []struct {
+		origin   string
+		final    string
+		expected string
+	}{
+		{
+			"o rato roeu a roupa do rei de roma",
+			"o rato nao roeu a roupa do rei de roma",
+			" (++nao ++)",
+		},
+		{
+			"the mouse gnawed the clothes of the king of rome",
+			"the mouse did not gnaw the king of rome's clothes",
+			" (~~gnawed the clothes of~~) (++did not gnaw++) (++'s clothes++)",
+		},
+		{
+			"o mar é azul e o ceu está claro",
+			"o mar é escuro e o ceu está turvo",
+			" (~~azul~~) (++escuro++) (~~clar~~) (++turv++)",
+		},
+		{
+			"the sea is blue and the sky is clear",
+			"the sea is dark and the sky is cloudy",
+			" (~~blue~~) (++dark++) (~~ear~~) (++oudy++)",
+		},
+	}
+	for _, v := range testCases {
+		got := GetDiff(v.origin, v.final)
+		assert.Equal(t, v.expected, got, "", v.origin, v.final, got)
+	}
+}
+
+func TestGetStringBetweenAll(t *testing.T) {
+	testCases := []struct {
+		input        string
+		ini          string
+		fin          string
+		includeQuery bool
+		expected     string
+	}{
+		{
+			"someone (Manuel) is very tired",
+			"(",
+			")",
+			true,
+			" (Manuel)",
+		},
+		{
+			"someone (Manuel) is very tired",
+			"(",
+			")",
+			false,
+			" Manuel",
+		},
+		{
+			"someone (Manuel) is very tired but the other (Marcos) traveled",
+			"(",
+			")",
+			true,
+			" (Manuel) (Marcos)",
+		},
+		{
+			"someone (Manuel) is very tired but the other (Marcos) traveled",
+			"(",
+			")",
+			false,
+			" Manuel Marcos",
+		},
+	}
+	for _, v := range testCases {
+		got := GetStringBetweenAll(v.input, v.ini, v.fin, v.includeQuery)
+		assert.Equal(t, v.expected, got, "", v.expected, got)
 	}
 }
